@@ -17,17 +17,26 @@
 
 ## Problem Statement 
 
-### Summary
-
 * To be RELEASED Thurs. 2/17/22
 
+### Summary
 ### Constraints
+### Measures of Success
 
-* Trades can only be a BUY or a SELL with a crytocurrency amount
-* SELL trades can only be done after BUYS (i.e. no short sell)
+## Data
 
-## Links
-
+* Data will be available for bulk download in .csv files
+* Data also can be easily downloaded into your program one row at a time in main.py
+* Row data will be formatted as follows:
+  * pair, price, amount, timestamp
+  * pair: EXCHANGE-CRYPTO-usd where EXCHANGE is a specific exchange where the trade happened and CRYPTO is either bitcoin (xbt) or ethereum (eth)
+  * price: price in dollars of the trade
+  * amount: number of units which is either bitcoins or ethereum contracts
+  * timestamp:  is seconds since epoch and can be used in python via ``datetime.datetime.fromtimestamp(TIMESTAMP)``
+  * Sample rows are:
+    * ``okfq-xbt-usd,14682.26,2,1514765115``
+    * ``okf1-xbt-usd,13793.65,2,1514765115``
+    * ``stmp-xbt-usd,13789.01,0.00152381,1514765115``
 
 ## Response Data Object Definitions
 
@@ -51,3 +60,16 @@
   “eth”: decimal.Decimal,         # unfilled eth volume
 }
 ```
+
+## Errors
+
+When an error occurs with your attempted trade, you will receive an empty fill dictionary and the
+unfilled trades dictionary—this may be caused by:
+* Insufficient funds
+* Yielded a type other than Trade or None; or
+* Invalid base currency in yielded Trade
+
+## References
+
+* [bitcoin](https://bitcoin.org/bitcoin.pdf)
+* [ethereum](https://ethereum.org/en/whitepaper/)
