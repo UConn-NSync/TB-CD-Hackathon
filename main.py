@@ -11,7 +11,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle as pk
 import datetime
-
+from ghulam import prepare_data, reshape_data
+from agron import * 
 
 load_dotenv()
 
@@ -78,32 +79,77 @@ def algorithm(csv_row: str, context: dict[str, Any],):
     """
     # algorithm logic...
 
+    
+    '''
+        max money = 1000000 ( might br a global ) 
+
+        have a queue  
+        bool : processing_transaction (potentially a global) 
+
+        data -> [okfq-xbt-usd, 14682.26, 2 ,1514765115] 
+
+        use keras model to check whether the data is a buy or sell or hold
+        hold range = 0.4 <= x => 0.6 ( for starting point )
+        buy range = 1
+        sell range = 0
+
+        if signal is buy: 
+            if there is a fill order already placed:
+                reject the new order
+                return response_fill()
+                
+            if money > 0:
+                money -= volume
+                response_fill(price, volume, error_code, error_message, unfilled)
+                if unfilled for btc is now empty, remove fill order.
+            
+            
+
+        if hold: 
+            continue/ wait for new information 
+
+        if signal is sell:
+            if last trade is buy:
+                money += volume
+                response_fill()
+
+
+    
+    '''
+
     response = yield None # example: Trade(BUY, 'xbt', Decimal(1))
 
     # algorithm clean-up/error handling...
 
 if __name__ == '__main__':
     # example to stream data
-    #print("reading data")
-    #with open('test.csv', 'w', newline='') as csvfile:
-        #spamwriter = csv.writer(csvfile, delimiter=' ')
-        #for x in STREAM.iter_records():
-            #spamwriter.writerow(x)
-            #print("writing")
+    # print("reading data")
+    # with open('test.csv', 'w', newline='') as csvfile:
+    #     spamwriter = csv.writer(csvfile, delimiter=' ')
+    #     for x in STREAM.iter_records():
+    #         spamwriter.writerow(x)
+    #         print("writing")
     
-    #cd = []
-    #for x in STREAM.iter_records():
-        #cd.append(x)
+    # cd = []
+    # for x in STREAM.iter_records():
+    #     cd.append(x)
     
-    #crypto_data = [x for x in STREAM.iter_records()]
-    #print("finished reading")
-    #df = pd.DataFrame(cd)
-    #df.to_pickle("test.pkl")
-    #print("saved data to pickle")
+    # crypto_data = [x for x in STREAM.iter_records()]
+    # print("finished reading")
+    # df = pd.DataFrame(cd)
+    # df.to_pickle("test.pkl")
+    # print("saved data to pickle")
 
     r = pd.read_pickle("mainData.pkl")
-    print(r)
+    # print(r)
+    s, t =  prepare_data(r)
+    print(s)
+    print(t)
 
+    n, m = reshape_data(r)
+
+    print(n)
+    print(m)
 
 # Example Interaction
 #
