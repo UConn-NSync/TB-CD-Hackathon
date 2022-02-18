@@ -5,6 +5,13 @@ from dotenv import load_dotenv
 from os import getenv
 from s3_helper import CSVStream
 from typing import Any
+import pandas as pd
+import csv
+import numpy as np
+import matplotlib.pyplot as plt
+import pickle as pk
+import datetime
+
 
 load_dotenv()
 
@@ -21,6 +28,8 @@ ETH_2020_KEY = "eth.usd.2020"
 
 S3 = resource("s3")
 SELECT_ALL_QUERY = 'SELECT * FROM S3Object'
+#Jan 1 2018 to Jan 7 2019
+SELECT_Jan_Jan = 'SELECT * FROM S3Object s WHERE s._1 = \'okf0-xbt-usd\' AND CAST(s._4 AS DECIMAL) >= 1514836800 AND CAST(s._4 AS DECIMAL) < 1514844000'
 
 # Example s3 SELECT Query to Filter Data Stream
 #
@@ -40,7 +49,7 @@ STREAM = CSVStream(
     S3.meta.client,
     key=XBT_2018_KEY,
     bucket=BUCKET,
-    expression=SELECT_ALL_QUERY,
+    expression=SELECT_Jan_Jan,
 )
 
 @dataclass
@@ -75,8 +84,26 @@ def algorithm(csv_row: str, context: dict[str, Any],):
 
 if __name__ == '__main__':
     # example to stream data
-    for row in STREAM.iter_records():
-        print(row)
+    #print("reading data")
+    #with open('test.csv', 'w', newline='') as csvfile:
+        #spamwriter = csv.writer(csvfile, delimiter=' ')
+        #for x in STREAM.iter_records():
+            #spamwriter.writerow(x)
+            #print("writing")
+    
+    #cd = []
+    #for x in STREAM.iter_records():
+        #cd.append(x)
+    
+    #crypto_data = [x for x in STREAM.iter_records()]
+    #print("finished reading")
+    #df = pd.DataFrame(cd)
+    #df.to_pickle("test.pkl")
+    #print("saved data to pickle")
+
+    r = pd.read_pickle("mainData.pkl")
+    print(r)
+
 
 # Example Interaction
 #
