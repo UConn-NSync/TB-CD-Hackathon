@@ -17,7 +17,8 @@ scaled_data = scaler.fit_transform(r["time"].values.reshape(-1,1))
 # how far to look back to predict the next days data 
 prediction_day = 9097
 
-# arrays to hold informartion of the data
+# arrays to hold informartion of the data\
+
 price_arr = []
 time_arr = []
 
