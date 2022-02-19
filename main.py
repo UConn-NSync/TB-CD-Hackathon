@@ -59,7 +59,21 @@ class Trade:
     base: str
     volume: Decimal
 
-def algorithm(csv_row: str, context: dict[str, Any],):
+def response_fill(price: decimal.Decimal, volume: decimal.Decimal, unfilled: dict[str, decimal.Decimal], error_code:str=None, error_msg: str=None):
+    x = dict()
+    x['price'] = price
+    x['volume'] = volume
+    if(error_code):
+        x['error_code'] = error_code
+    if(error_msg):
+        x['error_msg'] = error_msg
+    x['unfilled'] = unfilled
+    return x
+
+def fill():
+
+
+def algorithm(csv_row: str, context: dict[str, Any]):
     """ Trading Algorithm
 
     Add your logic to this function. This function will simulate a streaming
@@ -77,80 +91,56 @@ def algorithm(csv_row: str, context: dict[str, Any],):
     
     Yield (None | Trade | [Trade]): a trade order/s; None indicates no trade action
     """
+
     # algorithm logic...
 
-    
-    '''
-        max money = 1000000 ( might br a global ) 
 
-        have a queue  
-        bool : processing_transaction (potentially a global) 
+    #loads the data from the csv row
+    csv_data = csv_row
+    csv_data = csv_data.split(',')
+    base = csv_data[0].split('-')[1]
+    price = Decimal(csv_data[1])
+    volume = Decimal(csv_data[2])
+    timestamp = Decimal(csv_data[3])
+    print(csv_data)
 
-        data -> [okfq-xbt-usd, 14682.26, 2 ,1514765115] 
+    future_price = calculate_future_price(timestamp, price, base)
 
-        use keras model to check whether the data is a buy or sell or hold
-        hold range = 0.4 <= x => 0.6 ( for starting point )
-        buy range = 1
-        sell range = 0
 
-        if signal is buy: 
-            if there is a fill order already placed:
-                reject the new order
-                return response_fill()
-                
-            if money > 0:
-                money -= volume
-                response_fill(price, volume, error_code, error_message, unfilled)
-                if unfilled for btc is now empty, remove fill order.
+    #if the price is lower than the future price, then attempt to buy
+    if price+0.5 < future_price:
+        #check if there is a previous trade
+        if context['previous_trade'] != BUY: # there is no previous trade, so attempt to make buy signal
+            print("ATTEMPT BUY ORDER")
+            context['previous_trade'] = BUY
             
+            #attempt to make a buy order
             
+            t = Trade(BUY, 'xbt', 3) #only buy in chunks of 2-3btc
 
-        if hold: 
-            continue/ wait for new information 
-
-        if signal is sell:
-            if last trade is buy:
-                money += volume
-                response_fill()
-
+    #if the price is higher than the future price, then attempt to sell
+    elif price-0.5 > future_price:
+        #if there is no "Buy" trade before, then cannot sell.
+        if context['previous_buys'] != BUY:
+            #first check if we have btc or eth in our wallet
 
 
     
-    '''
+        
 
-    response = yield None # example: Trade(BUY, 'xbt', Decimal(1))
+    # margin between the price and the future price, hodl
+
+    response = yield t # example: Trade(BUY, 'xbt', Decimal(1))
 
     # algorithm clean-up/error handling...
 
+    #t is the response data object with 
+
 if __name__ == '__main__':
-    # example to stream data
-    # print("reading data")
-    # with open('test.csv', 'w', newline='') as csvfile:
-    #     spamwriter = csv.writer(csvfile, delimiter=' ')
-    #     for x in STREAM.iter_records():
-    #         spamwriter.writerow(x)
-    #         print("writing")
-    
-    # cd = []
-    # for x in STREAM.iter_records():
-    #     cd.append(x)
-    
-    # crypto_data = [x for x in STREAM.iter_records()]
-    # print("finished reading")
-    # df = pd.DataFrame(cd)
-    # df.to_pickle("test.pkl")
-    # print("saved data to pickle")
+    context = {'currentMoney': Decimal(1000000), 'owned_xbt': Decimal(0), 'owned_eth': Decimal(0), 'previous_trade': None}
 
-    r = pd.read_pickle("mainData.pkl")
-    # print(r)
-    s, t =  prepare_data(r)
-    print(s)
-    print(t)
 
-    n, m = reshape_data(r)
-
-    print(n)
-    print(m)
+    pass
 
 # Example Interaction
 #
@@ -195,3 +185,25 @@ if __name__ == '__main__':
 # In step 3, the new trade order that you submitted is rejected; however,
 # we will continue to fill that order that was already in progress, so
 # the price and volume are CONFIRMED in that payload.
+
+
+def calculate_future_price(timestamp: str, price: decimal.Decimal, base:str):
+    """
+    Calculates the future price of a given timestamp.
+    """
+    if 'xbt' in base:
+        model.load("./models/xbt_model")
+    elif 'eth' in base:
+        model.load("./models/eth_model")
+    else:
+        print("Invalid base")
+        return
+
+    #convert timestamp to datetime
+    timestamp = datetime.datetime.fromtimestamp(timestamp)
+
+    tarry = np.array()
+    #get the future price
+    future_price = model.predict(tarray)
+
+    
