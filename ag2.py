@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import matplotlib.pyplot as plt
+import seaborn as sns
+
+# this is important to get the correct path
 
 if __name__ == '__main__':
     data = pd.read_pickle('mainData.pkl')
